@@ -4,7 +4,7 @@ import ProgressBar from "../components/ProgressBar";
 import RotatingBackground from "../components/RotatingBackground";
 
 export default function Background() {
-  const multiplierValue = 10;
+  const multiplierValue = 3;
 
   const [phase, setPhase] = useState("progress"); // "progress" | "animation"
 
