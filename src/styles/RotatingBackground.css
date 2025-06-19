@@ -1,3 +1,4 @@
+/* Rotating image css */
 .rotating-bg-img {
   position: absolute;
   top: 100%;
@@ -16,4 +17,51 @@
   100% {
     transform: translate(-50%, -50%) scale(2) rotate(360deg);
   }
+}
+
+/* Gradient blur animation */
+@keyframes breath {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.animate-breath {
+  animation: breath 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background: linear-gradient(135deg, #1b1c1d, #1b1c1d);
+  }
+  25% {
+    background: linear-gradient(135deg, #34b4ff, #1b1c1d);
+  }
+  50% {
+    background: linear-gradient(135deg, #913ef8, #1b1c1d);
+  }
+  75% {
+    background: linear-gradient(135deg, #c017b4, #1b1c1d);
+  }
+  100% {
+    background: linear-gradient(135deg, #1b1c1d, #1b1c1d);
+  }
+}
+
+.animate-gradient-blur {
+  animation: gradientShift 20s ease-in-out infinite,
+    breath 3s ease-in-out infinite;
+  filter: blur(120px);
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  border-radius: 9999px;
+  opacity: 0.5;
+  z-index: 0;
 }
