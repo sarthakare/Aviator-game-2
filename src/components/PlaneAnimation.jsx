@@ -83,8 +83,9 @@ export default function PlaneAnimation({ multiplierValue }) {
       ctx.fill();
     }
 
-    // === Draw Curve ===
+    // === Draw and Fill Under Curve ===
     ctx.strokeStyle = "#e50539";
+    ctx.fillStyle = "rgba(229, 5, 57, 0.2)";
     ctx.lineWidth = 4;
     ctx.beginPath();
 
@@ -98,20 +99,34 @@ export default function PlaneAnimation({ multiplierValue }) {
     const step = 0.01;
 
     const maxMultiplier = 2;
-    const pulse = multiplier >= 2 ? Math.sin(Date.now() / 300) * 0.09 : 0; // subtle wave
+    const pulse = multiplier >= 2 ? Math.sin(Date.now() / 300) * 0.09 : 0;
+
+    const points = [];
 
     for (let t = 0; t <= Math.min(multiplier, maxMultiplier); t += step) {
       const x = curveStartX + (t / maxMultiplier) * maxCurveWidth;
-
-      // Apply pulsing to yValue
-      const yValue = a * Math.pow(t, b + pulse);
-      const y = xAxisY - (yValue / Math.pow(maxMultiplier, b + pulse)) * maxCurveHeight;
-
-      if (t === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
+      const yVal = a * Math.pow(t, b + pulse);
+      const y =
+        xAxisY - (yVal / Math.pow(maxMultiplier, b + pulse)) * maxCurveHeight;
+      points.push([x, y]);
     }
 
-    ctx.stroke();
+    // === Fill Area Under Curve ===
+    if (points.length > 0) {
+      ctx.moveTo(points[0][0], xAxisY); // from x-axis up to curve start
+      for (const [x, y] of points) ctx.lineTo(x, y);
+      ctx.lineTo(points[points.length - 1][0], xAxisY); // drop down to x-axis end
+      ctx.closePath();
+      ctx.fill();
+
+      // === Draw Top Curve Line ===
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i][0], points[i][1]);
+      }
+      ctx.stroke();
+    }
   }, [multiplier, multiplierValue]);
 
   return (
