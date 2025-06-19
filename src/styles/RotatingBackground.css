@@ -1,0 +1,19 @@
+.rotating-bg-img {
+  position: absolute;
+  top: 100%;
+  left: 0%;
+  object-fit: cover;
+  transform: translate(-50%, -50%) scale(3);
+  z-index: 0;
+  /* No animation by default */
+}
+
+.spin-animate {
+  animation: spin 20s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: translate(-50%, -50%) scale(2) rotate(360deg);
+  }
+}
