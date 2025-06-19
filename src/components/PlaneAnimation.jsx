@@ -82,7 +82,34 @@ export default function PlaneAnimation({ multiplierValue }) {
       ctx.fillStyle = "#FFF";
       ctx.fill();
     }
-  }, [multiplier]);
+
+    ctx.strokeStyle = "#e50539";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+
+    const curveStartX = yAxisX;
+    const curveEndX = canvas.width * 0.7;
+    const maxCurveWidth = curveEndX - curveStartX;
+    const maxCurveHeight = xAxisY - canvas.height * 0.5;
+
+    const a = 1;
+    const b = 1.7;
+    const step = 0.01;
+
+    const maxT = Math.min(multiplier, 2);
+    const maxY = Math.pow(2, b); // normalize to final 2x shape
+
+    for (let t = 0; t <= maxT; t += step) {
+      const x = curveStartX + (t / 2) * maxCurveWidth; // map to 0–2
+      const yValue = a * Math.pow(t, b);
+      const y = xAxisY - (yValue / maxY) * maxCurveHeight;
+
+      if (t === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+
+    ctx.stroke();
+  }, [multiplier, multiplierValue]);
 
   return (
     <div className="relative h-full w-full bg-transparent">
