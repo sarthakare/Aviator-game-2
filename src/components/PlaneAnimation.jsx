@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import planeImgOneSrc from "../assets/rocket-one.png";
 import planeImgTwoSrc from "../assets/rocket-two.png";
 
-export default function PlaneAnimation({ multiplierValue }) {
+export default function PlaneAnimation({ multiplierValue, onComplete }) {
   const [multiplier, setMultiplier] = useState(0.0);
   const [planeLoaded, setPlaneLoaded] = useState(false);
   const [planeIndex, setPlaneIndex] = useState(0); // 0 or 1 for switching images
@@ -43,13 +43,14 @@ export default function PlaneAnimation({ multiplierValue }) {
         const next = +(prev + 0.01).toFixed(2);
         if (next >= multiplierValue) {
           clearInterval(interval);
+          onComplete?.(); // <-- notify parent
           return multiplierValue;
         }
         return next;
       });
     }, 50);
     return () => clearInterval(interval);
-  }, [multiplierValue]);
+  }, [multiplierValue, onComplete]);
 
   // Draw everything
   useEffect(() => {

@@ -40,17 +40,14 @@
   0% {
     background: linear-gradient(135deg, #1b1c1d, #1b1c1d);
   }
-  25% {
+  20% {
     background: linear-gradient(135deg, #34b4ff, #1b1c1d);
   }
-  50% {
+  45% {
     background: linear-gradient(135deg, #913ef8, #1b1c1d);
   }
-  75% {
+  70% {
     background: linear-gradient(135deg, #c017b4, #1b1c1d);
-  }
-  100% {
-    background: linear-gradient(135deg, #1b1c1d, #1b1c1d);
   }
 }
 
