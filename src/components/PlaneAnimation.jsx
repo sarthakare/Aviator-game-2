@@ -83,6 +83,7 @@ export default function PlaneAnimation({ multiplierValue }) {
       ctx.fill();
     }
 
+    // === Draw Curve ===
     ctx.strokeStyle = "#e50539";
     ctx.lineWidth = 4;
     ctx.beginPath();
@@ -96,13 +97,15 @@ export default function PlaneAnimation({ multiplierValue }) {
     const b = 1.7;
     const step = 0.01;
 
-    const maxT = Math.min(multiplier, 2);
-    const maxY = Math.pow(2, b); // normalize to final 2x shape
+    const maxMultiplier = 2;
+    const pulse = multiplier >= 2 ? Math.sin(Date.now() / 300) * 0.09 : 0; // subtle wave
 
-    for (let t = 0; t <= maxT; t += step) {
-      const x = curveStartX + (t / 2) * maxCurveWidth; // map to 0–2
-      const yValue = a * Math.pow(t, b);
-      const y = xAxisY - (yValue / maxY) * maxCurveHeight;
+    for (let t = 0; t <= Math.min(multiplier, maxMultiplier); t += step) {
+      const x = curveStartX + (t / maxMultiplier) * maxCurveWidth;
+
+      // Apply pulsing to yValue
+      const yValue = a * Math.pow(t, b + pulse);
+      const y = xAxisY - (yValue / Math.pow(maxMultiplier, b + pulse)) * maxCurveHeight;
 
       if (t === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
