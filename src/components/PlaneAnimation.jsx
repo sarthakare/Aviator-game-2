@@ -1,10 +1,42 @@
 import React, { useEffect, useRef, useState } from "react";
+import planeImgOneSrc from "../assets/rocket-one.png";
+import planeImgTwoSrc from "../assets/rocket-two.png";
 
 export default function PlaneAnimation({ multiplierValue }) {
   const [multiplier, setMultiplier] = useState(0.0);
+  const [planeLoaded, setPlaneLoaded] = useState(false);
+  const [planeIndex, setPlaneIndex] = useState(0); // 0 or 1 for switching images
   const canvasRef = useRef(null);
+  const planeImgsRef = useRef([null, null]);
 
-  // Multiplier increment logic with upper bound
+  // Load both plane images once
+  useEffect(() => {
+    let loaded = 0;
+    const img1 = new window.Image();
+    const img2 = new window.Image();
+    img1.src = planeImgOneSrc;
+    img2.src = planeImgTwoSrc;
+    img1.onload = () => {
+      loaded += 1;
+      if (loaded === 2) setPlaneLoaded(true);
+    };
+    img2.onload = () => {
+      loaded += 1;
+      if (loaded === 2) setPlaneLoaded(true);
+    };
+    img1.onerror = img2.onerror = () => setPlaneLoaded(false);
+    planeImgsRef.current = [img1, img2];
+  }, []);
+
+  // Switch plane image twice a second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaneIndex((prev) => (prev === 0 ? 1 : 0));
+    }, 500); // 500ms = twice a second
+    return () => clearInterval(interval);
+  }, []);
+
+  // Multiplier increment logic
   useEffect(() => {
     const interval = setInterval(() => {
       setMultiplier((prev) => {
@@ -16,10 +48,10 @@ export default function PlaneAnimation({ multiplierValue }) {
         return next;
       });
     }, 50);
-
     return () => clearInterval(interval);
   }, [multiplierValue]);
 
+  // Draw everything
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -43,26 +75,21 @@ export default function PlaneAnimation({ multiplierValue }) {
     ctx.strokeStyle = "#444";
     ctx.lineWidth = 2;
 
-    // X-axis
     ctx.beginPath();
     ctx.moveTo(0, xAxisY);
     ctx.lineTo(canvas.width, xAxisY);
     ctx.stroke();
 
-    // Y-axis
     ctx.beginPath();
     ctx.moveTo(yAxisX, canvas.height);
     ctx.lineTo(yAxisX, 0);
     ctx.stroke();
 
-    // === Draw Dots on X-Axis ===
+    // === Dots on Axes ===
     const dotOffset = canvas.height * 0.03;
     const dotSpacing = 0.1 * canvas.width;
-    let startOffset = 0;
-    if (multiplier > 2) {
-      const speed = (multiplier - 2) * 500; // start moving only after 2x
-      startOffset = speed % dotSpacing;
-    }
+    let startOffset =
+      multiplier > 2 ? ((multiplier - 2) * 500) % dotSpacing : 0;
 
     for (let i = -1; i < canvas.width / dotSpacing + 2; i++) {
       const x =
@@ -73,7 +100,6 @@ export default function PlaneAnimation({ multiplierValue }) {
       ctx.fill();
     }
 
-    // === Draw Dots on Y-Axis ===
     for (let i = -1; i < canvas.width / dotSpacing + 2; i++) {
       const y =
         canvas.width * yAxisOffsetXPercent + i * dotSpacing + startOffset;
@@ -83,11 +109,10 @@ export default function PlaneAnimation({ multiplierValue }) {
       ctx.fill();
     }
 
-    // === Draw and Fill Under Curve ===
+    // === Draw Curve ===
     ctx.strokeStyle = "#e50539";
     ctx.fillStyle = "rgba(229, 5, 57, 0.2)";
     ctx.lineWidth = 4;
-    ctx.beginPath();
 
     const curveStartX = yAxisX;
     const curveEndX = canvas.width * 0.7;
@@ -97,12 +122,10 @@ export default function PlaneAnimation({ multiplierValue }) {
     const a = 1;
     const b = 1.7;
     const step = 0.01;
-
     const maxMultiplier = 2;
     const pulse = multiplier >= 2 ? Math.sin(Date.now() / 300) * 0.09 : 0;
 
     const points = [];
-
     for (let t = 0; t <= Math.min(multiplier, maxMultiplier); t += step) {
       const x = curveStartX + (t / maxMultiplier) * maxCurveWidth;
       const yVal = a * Math.pow(t, b + pulse);
@@ -111,29 +134,43 @@ export default function PlaneAnimation({ multiplierValue }) {
       points.push([x, y]);
     }
 
-    // === Fill Area Under Curve ===
+    // Fill under curve
     if (points.length > 0) {
-      ctx.moveTo(points[0][0], xAxisY); // from x-axis up to curve start
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], xAxisY);
       for (const [x, y] of points) ctx.lineTo(x, y);
-      ctx.lineTo(points[points.length - 1][0], xAxisY); // drop down to x-axis end
+      ctx.lineTo(points[points.length - 1][0], xAxisY);
       ctx.closePath();
       ctx.fill();
 
-      // === Draw Top Curve Line ===
+      // Draw curve
       ctx.beginPath();
       ctx.moveTo(points[0][0], points[0][1]);
       for (let i = 1; i < points.length; i++) {
         ctx.lineTo(points[i][0], points[i][1]);
       }
       ctx.stroke();
+
+      // === Draw Plane at End of Curve ===
+      if (planeLoaded) {
+        const [lastX, lastY] = points[points.length - 1];
+        ctx.save();
+        ctx.drawImage(
+          planeImgsRef.current[planeIndex],
+          lastX - 20,
+          lastY - 90,
+          200,
+          100
+        );
+        ctx.restore();
+      }
     }
-  }, [multiplier, multiplierValue]);
+  }, [multiplier, multiplierValue, planeLoaded, planeIndex]);
 
   return (
     <div className="relative h-full w-full bg-transparent">
       <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
-
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl font-bold text-white tracking-widest z-10">
+      <div className="text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl font-bold tracking-widest z-10">
         {multiplier.toFixed(2)}x
       </div>
     </div>
