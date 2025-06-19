@@ -25,7 +25,7 @@ export default function ProgressBar() {
   }, []);
 
   return (
-    <div className="w-full h-full z-1 flex flex-col items-center gap-4">
+    <div className="w-full h-full z-10 flex flex-col items-center gap-4">
       {/* Rotating center image */}
       <img
         src={centerImg}
