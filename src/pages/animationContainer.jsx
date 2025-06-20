@@ -28,13 +28,13 @@ export default function Background() {
   };
   
   return (
-    <div className="h-full w-full bg-[#1B1C1D] relative overflow-hidden rounded-3xl border-2 border-gray-300">
+    <div className="mt-30 fixed top-0 right-0 w-full h-1/2 md:w-2/3 md:h-1/2 bg-[#1B1C1D] overflow-hidden rounded-none md:rounded-3xl border-2 border-gray-300">
       <audio ref={audioRef} src={bgAudio} loop />
-  
+
       <div className="absolute inset-0 z-0">
         <RotatingBackground shouldRotate={phase === "animation"} />
       </div>
-  
+
       {phase === "initial" && (
         <div className="absolute inset-0 flex items-center justify-center z-30">
           <button
@@ -45,13 +45,13 @@ export default function Background() {
           </button>
         </div>
       )}
-  
+
       {phase === "progress" && (
         <div className="absolute top-8 w-full h-full z-10 flex justify-center">
           <ProgressBar onComplete={handleProgressComplete} />
         </div>
       )}
-  
+
       {phase === "animation" && (
         <div className="absolute inset-0 z-20">
           <PlaneAnimation
