@@ -5,7 +5,7 @@ import RotatingBackground from "../components/RotatingBackground";
 import bgAudio from "../assets/audio/sfxBg.mp3"; 
 
 export default function Background() {
-  const multiplierValue = 3;
+  const multiplierValue = 10;
   const [phase, setPhase] = useState("initial"); // "initial" | "progress" | "animation"
   const audioRef = useRef(null);
 
