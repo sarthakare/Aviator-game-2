@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import planeImgOneSrc from "../assets/rocket-one.png";
 import planeImgTwoSrc from "../assets/rocket-two.png";
+import startSound from "../assets/audio/sfxRocketStart.mp3";
+import crashSound from "../assets/audio/sfxRocketCrash.mp3";
 
 export default function PlaneAnimation({ multiplierValue, onComplete }) {
   const [multiplier, setMultiplier] = useState(0.0);
@@ -12,6 +14,8 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
   const canvasRef = useRef(null);
   const planeImgsRef = useRef([null, null]);
   const flyAwayRef = useRef(false);
+  const startAudioRef = useRef(null);
+  const crashAudioRef = useRef(null);
 
   // Load both plane images once
   useEffect(() => {
@@ -241,8 +245,28 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
     }
   }, [multiplier, multiplierValue, planeLoaded, planeIndex, flyAway, flyAwayProgress]);
 
+  // Play start sound when multiplier starts
+  useEffect(() => {
+    if (multiplier === 0 && startAudioRef.current) {
+      startAudioRef.current.currentTime = 0;
+      startAudioRef.current.play().catch(() => {});
+    }
+  }, [multiplier]);
+
+  // Play crash sound when multiplier stops (reaches multiplierValue)
+  useEffect(() => {
+    if (multiplier >= multiplierValue && crashAudioRef.current) {
+      crashAudioRef.current.currentTime = 0;
+      crashAudioRef.current.play().catch(() => {});
+    }
+  }, [multiplier, multiplierValue]);
+
   return (
     <div className="relative h-full w-full bg-transparent">
+      {/* Sound effects */}
+      <audio ref={startAudioRef} src={startSound} />
+      <audio ref={crashAudioRef} src={crashSound} />
+
       <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10">
         {showFlewAway && (
@@ -253,7 +277,7 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
         <div
           className="text-6xl font-bold tracking-widest"
           style={{
-            color: multiplier >= multiplierValue ? "#e50539" : "white", // Only red at max
+            color: multiplier >= multiplierValue ? "#e50539" : "white",
             textShadow: "0 2px 8px #000",
           }}
         >
