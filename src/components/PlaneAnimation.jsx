@@ -171,23 +171,27 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
 
       // Curve parameters
       const a = 1;
-      const b = 1.7;
+      const b = 3;
       const step = 0.01;
       const maxMultiplier = 2;
-      // Deep pulse effect for curve and plane
-      const pulse = multiplier >= 2 ? Math.sin(Date.now() / 300) * 0.18 : 0;
+      // Pulse for both axes, but in opposite directions
+      const rawPulse = Math.sin(Date.now() / 500) * 0.18;
+      const pulseRamp =
+        multiplier < 2 ? 0 : Math.min((multiplier - 2) / 0.2, 1); // ramps from 0 to 1 as multiplier goes 2→2.2
+      const pulse = rawPulse * pulseRamp;
 
-      // Curve X/Y range, pulsing with 'pulse'
+      // Curve X/Y range, pulse affects both axes oppositely
       const curveStartX = yAxisX;
-      const curveEndX = canvas.width * (0.7 + pulse * 0.08); // X axis endpoint pulses
+      const curveEndX = canvas.width * (0.7 - pulse * 0.1); // X axis endpoint pulses opposite to Y
       const maxCurveWidth = curveEndX - curveStartX;
-      const maxCurveHeight = (xAxisY - canvas.height * 0.5) * (1 + pulse * 0.08); // Y axis endpoint pulses
+      const maxCurveHeight = (xAxisY - canvas.height * 0.5) * (1 + pulse * 0.5); // Y axis endpoint pulses
 
       // Calculate curve points
       const points = [];
       for (let t = 0; t <= Math.min(multiplier, maxMultiplier); t += step) {
+        // X pulses opposite to Y
         const x = curveStartX + (t / maxMultiplier) * maxCurveWidth;
-        const yVal = a * Math.pow(t, b + pulse);
+        const yVal = a * Math.pow(t, b + pulse); // pulse only affects Y
         const y =
           xAxisY - (yVal / Math.pow(maxMultiplier, b + pulse)) * maxCurveHeight;
         points.push([x, y]);
@@ -217,32 +221,46 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
       let lastX, lastY;
       if (!flyAway) {
         // Use the end of the curve for plane position
-        const pulse = multiplier >= 2 ? Math.sin(Date.now() / 300) * 0.18 : 0;
+        // ...inside plane drawing...
+        const rawPulse = Math.sin(Date.now() / 500) * 0.18;
+        const pulseRamp =
+          multiplier < 2 ? 0 : Math.min((multiplier - 2) / 0.2, 1);
+        const pulse = rawPulse * pulseRamp;
+
         const curveStartX = yAxisX;
-        const curveEndX = canvas.width * (0.7 + pulse * 0.08);
+        const curveEndX = canvas.width * (0.7 - pulse * 0.1);
         const maxCurveWidth = curveEndX - curveStartX;
-        const maxCurveHeight = (xAxisY - canvas.height * 0.5) * (1 + pulse * 0.08);
+        const maxCurveHeight =
+          (xAxisY - canvas.height * 0.5) * (1 + pulse * 0.5);
+        // ...rest of code unchanged...
         const a = 1;
-        const b = 1.7;
+        const b = 3;
         const maxMultiplier = 2;
         const t = Math.min(multiplier, maxMultiplier);
         lastX = curveStartX + (t / maxMultiplier) * maxCurveWidth;
-        const yVal = a * Math.pow(t, b + pulse);
+        const yVal = a * Math.pow(t, b + pulse); // pulse only affects Y
         lastY =
           xAxisY - (yVal / Math.pow(maxMultiplier, b + pulse)) * maxCurveHeight;
       } else {
         // Use the end of the curve at maxMultiplier for fly away start
-        const pulse = Math.sin(Date.now() / 300) * 0.18;
+        // ...inside plane drawing...
+        const rawPulse = Math.sin(Date.now() / 500) * 0.18;
+        const pulseRamp =
+          multiplier < 2 ? 0 : Math.min((multiplier - 2) / 0.2, 1);
+        const pulse = rawPulse * pulseRamp;
+
         const curveStartX = yAxisX;
-        const curveEndX = canvas.width * (0.7 + pulse * 0.08);
+        const curveEndX = canvas.width * (0.7 - pulse * 0.1);
         const maxCurveWidth = curveEndX - curveStartX;
-        const maxCurveHeight = (xAxisY - canvas.height * 0.5) * (1 + pulse * 0.08);
+        const maxCurveHeight =
+          (xAxisY - canvas.height * 0.5) * (1 + pulse * 0.5);
+        // ...rest of code unchanged...
         const a = 1;
-        const b = 1.7;
+        const b = 3;
         const maxMultiplier = 2;
         const t = Math.min(multiplier, maxMultiplier);
         lastX = curveStartX + (t / maxMultiplier) * maxCurveWidth;
-        const yVal = a * Math.pow(t, b + pulse);
+        const yVal = a * Math.pow(t, b + pulse); // pulse only affects Y
         lastY =
           xAxisY - (yVal / Math.pow(maxMultiplier, b + pulse)) * maxCurveHeight;
 
@@ -264,8 +282,15 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
       );
       ctx.restore();
     }
-  // Redraw when these change
-  }, [multiplier, multiplierValue, planeLoaded, planeIndex, flyAway, flyAwayProgress]);
+    // Redraw when these change
+  }, [
+    multiplier,
+    multiplierValue,
+    planeLoaded,
+    planeIndex,
+    flyAway,
+    flyAwayProgress,
+  ]);
 
   // Play start sound when multiplier starts
   useEffect(() => {
