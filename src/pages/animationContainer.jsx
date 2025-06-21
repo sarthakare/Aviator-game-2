@@ -28,7 +28,7 @@ export default function Background() {
   };
   
   return (
-    <div className="mt-30 fixed top-0 right-0 w-full h-1/2 md:w-2/3 md:h-1/2 bg-[#1B1C1D] overflow-hidden rounded-none md:rounded-3xl border-2 border-gray-300">
+    <div className="mt-35 fixed top-0 right-0 w-full h-1/3 md:w-[75vw] md:h-1/2 bg-[#1B1C1D] overflow-hidden rounded-none md:rounded-3xl border-1 border-gray-300">
       <audio ref={audioRef} src={bgAudio} loop />
 
       <div className="absolute inset-0 z-0">
@@ -47,7 +47,7 @@ export default function Background() {
       )}
 
       {phase === "progress" && (
-        <div className="absolute top-8 w-full h-full z-10 flex justify-center">
+        <div className="absolute w-full h-full z-10 flex justify-center">
           <ProgressBar onComplete={handleProgressComplete} />
         </div>
       )}
