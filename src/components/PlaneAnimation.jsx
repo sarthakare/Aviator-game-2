@@ -272,13 +272,20 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
       }
 
       ctx.save();
+      // Responsive plane size
+      let planeWidth = 200;
+      let planeHeight = 100;
+      if (window.innerWidth < 640) { // Tailwind's 'sm' breakpoint (640px)
+        planeWidth = 100;
+        planeHeight = 100;
+      }
       // Draw the plane image at calculated position
       ctx.drawImage(
         planeImgsRef.current[planeIndex],
-        lastX - 20,
-        lastY - 90,
-        200,
-        100
+        lastX - planeWidth / 10,
+        lastY - planeHeight * 0.9,
+        planeWidth,
+        planeHeight
       );
       ctx.restore();
     }
@@ -309,25 +316,38 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
   }, [multiplier, multiplierValue]);
 
   return (
-    <div className="relative h-full w-full bg-transparent">
+    <div className="relative w-full h-full bg-transparent overflow-hidden">
       {/* Sound effects */}
       <audio ref={startAudioRef} src={startSound} />
       <audio ref={crashAudioRef} src={crashSound} />
 
-      {/* Canvas for drawing animation */}
-      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
+      {/* Responsive Canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute top-0 left-0 w-full h-full"
+        style={{
+          display: "block",
+          width: "100vw",
+          height: "100%",
+          maxWidth: "100%",
+          maxHeight: "100%",
+          aspectRatio: "16/9",
+        }}
+      />
+
       {/* Overlay for multiplier and "Flew Away!" message */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10">
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10 w-full px-2">
         {showFlewAway && (
-          <div className="mb-4 text-4xl font-bold text-red-500 drop-shadow-lg">
+          <div className="mb-2 sm:mb-4 text-2xl sm:text-4xl font-bold text-red-500 drop-shadow-lg text-center">
             Flew Away!
           </div>
         )}
         <div
-          className="text-4xl font-bold tracking-widest"
+          className="text-2xl sm:text-4xl font-bold tracking-widest text-center"
           style={{
             color: multiplier >= multiplierValue ? "#e50539" : "white",
             textShadow: "0 2px 8px #000",
+            wordBreak: "break-word",
           }}
         >
           {multiplier.toFixed(2)}x
