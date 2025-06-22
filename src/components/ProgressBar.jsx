@@ -37,25 +37,32 @@ export default function ProgressBar({ onComplete }) {
   }, []);
 
   return (
-    <div className="w-full h-full z-10 flex flex-col items-center justify-center gap-4 relative">
-      <img src={centerImg} alt="center" className="w-16 h-16 animate-spin-fast" />
+    <div className="w-full h-full z-10 flex flex-col items-center justify-center gap-4 relative px-2">
+      <img
+        src={centerImg}
+        alt="center"
+        className="w-12 h-12 sm:w-16 sm:h-16 animate-spin-fast"
+      />
 
-      <p className="text-white text-xl font-semibold text-center">
-        WAITING FOR NEXT ROUND
-      </p>
-
-      <div className="w-1/4 h-3 bg-gray-700 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-[#e50539] transition-all duration-[50ms]"
-          style={{ width: `${progress}%` }}
-        />
+      {/* Group text and progress bar in a single div with inline width */}
+      <div className="flex flex-col items-center w-fit max-w-full">
+        <p className="text-white text-base sm:text-xl font-semibold text-center whitespace-nowrap px-2">
+          WAITING FOR NEXT ROUND
+        </p>
+        <div className="w-full h-2 sm:h-3 bg-gray-700 rounded-full overflow-hidden mt-2">
+          <div
+            className="h-full bg-[#e50539] transition-all duration-[50ms]"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </div>
 
-      {/* NEW: plane image at bottom-left */}
+      {/* Plane image at bottom-left, responsive size and position */}
       <img
         src={planeIndex === 0 ? planeImgOneSrc : planeImgTwoSrc}
         alt="plane"
-        className="absolute bottom-4 left-4 w-40 h-auto"
+        className="absolute left-2 bottom-2 w-24 sm:w-32 md:w-40 h-auto"
+        style={{ maxWidth: "30vw" }}
       />
     </div>
   );
