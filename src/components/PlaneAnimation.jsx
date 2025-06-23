@@ -278,7 +278,7 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
       let planeHeight = 150;
       if (window.innerWidth < 640) { // Tailwind's 'sm' breakpoint (640px)
         planeWidth = 100;
-        planeHeight = 100;
+        planeHeight = 125;
       }
       // Draw the plane image at calculated position
       ctx.drawImage(
