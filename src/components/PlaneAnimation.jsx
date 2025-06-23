@@ -167,7 +167,7 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
     if (!flyAway) {
       ctx.strokeStyle = "#e50539";
       ctx.fillStyle = "rgba(229, 5, 57, 0.2)";
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 6;
 
       // Curve parameters
       const a = 1;
@@ -265,8 +265,9 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
           xAxisY - (yVal / Math.pow(maxMultiplier, b + pulse)) * maxCurveHeight;
 
         // Move plane diagonally up and right as it flies away
-        const flyDistanceX = canvas.width * 0.4;
-        const flyDistanceY = canvas.height * 0.5;
+        // Increase flyDistanceX and flyDistanceY so plane always leaves canvas, even for 1.00x
+        const flyDistanceX = canvas.width * 1.2; // was 0.4
+        const flyDistanceY = canvas.height * 1.2; // was 0.5
         lastX += flyAwayProgress * flyDistanceX;
         lastY -= flyAwayProgress * flyDistanceY;
       }
@@ -274,7 +275,7 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
       ctx.save();
       // Responsive plane size
       let planeWidth = 200;
-      let planeHeight = 100;
+      let planeHeight = 150;
       if (window.innerWidth < 640) { // Tailwind's 'sm' breakpoint (640px)
         planeWidth = 100;
         planeHeight = 100;
@@ -343,7 +344,7 @@ export default function PlaneAnimation({ multiplierValue, onComplete }) {
           </div>
         )}
         <div
-          className="text-2xl sm:text-4xl font-bold tracking-widest text-center"
+          className="text-6xl sm:text-6xl font-bold tracking-widest text-center"
           style={{
             color: multiplier >= multiplierValue ? "#e50539" : "white",
             textShadow: "0 2px 8px #000",
